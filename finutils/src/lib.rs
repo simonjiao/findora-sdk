@@ -5,8 +5,12 @@
 #![deny(warnings)]
 #![deny(missing_docs)]
 
-#[cfg(feature = "std")]
 pub mod api;
-#[cfg(feature = "std")]
 pub mod common;
 pub mod txn_builder;
+
+pub use fp_types;
+pub use fp_utils;
+pub use globutils::wallet;
+pub use ledger;
+pub use zei;

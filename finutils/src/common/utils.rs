@@ -38,13 +38,29 @@ use {
 #[inline(always)]
 #[allow(missing_docs)]
 pub fn new_tx_builder() -> Result<TransactionBuilder> {
-    get_seq_id().c(d!()).map(TransactionBuilder::from_seq_id)
+    new_tx_builder_to(None)
+}
+
+#[inline(always)]
+#[allow(missing_docs)]
+pub fn new_tx_builder_to(url: Option<&str>) -> Result<TransactionBuilder> {
+    get_seq_id_of(url)
+        .c(d!())
+        .map(TransactionBuilder::from_seq_id)
 }
 
 #[inline(always)]
 #[allow(missing_docs)]
 pub fn send_tx(tx: &Transaction) -> Result<()> {
-    let url = format!("{}:8669/submit_transaction", get_serv_addr().c(d!())?);
+    send_tx_to(tx, None)
+}
+
+#[allow(missing_docs)]
+pub fn send_tx_to(tx: &Transaction, to: Option<&str>) -> Result<()> {
+    let url = format!(
+        "{}:8669/submit_transaction",
+        to.unwrap_or_else(|| get_serv_addr().expect("failed to get serv address"))
+    );
     let tx_bytes = serde_json::to_vec(tx).c(d!())?;
 
     let ret = attohttpc::post(url)
@@ -503,10 +519,10 @@ fn get_owned_utxos_x(
     rpc_endpoint: Option<&str>,
     addr: &XfrPublicKey,
 ) -> Result<HashMap<TxoSID, (Utxo, Option<OwnerMemo>)>> {
-    let default_endpoint = format!("{}:8668", get_serv_addr().c(d!())?);
     let url = format!(
-        "{}/owned_utxos/{}",
-        rpc_endpoint.unwrap_or(default_endpoint.as_str()),
+        "{}:8668/owned_utxos/{}",
+        rpc_endpoint
+            .unwrap_or_else(|| get_serv_addr().expect("failed to get service address")),
         wallet::public_key_to_base64(addr)
     );
 
@@ -524,14 +540,17 @@ fn get_owned_utxos_x(
 }
 
 #[inline(always)]
-fn get_seq_id() -> Result<u64> {
+fn get_seq_id_of(serv_url: Option<&str>) -> Result<u64> {
     type Resp = (
         HashOf<Option<StateCommitmentData>>,
         u64,
         SignatureOf<(HashOf<Option<StateCommitmentData>>, u64)>,
     );
 
-    let url = format!("{}:8668/global_state", get_serv_addr().c(d!())?);
+    let url = format!(
+        "{}:8668/global_state",
+        serv_url.unwrap_or_else(|| get_serv_addr().expect("failed to get serv address"))
+    );
 
     attohttpc::get(url)
         .send()
