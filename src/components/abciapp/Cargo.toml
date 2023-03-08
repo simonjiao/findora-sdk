@@ -46,11 +46,9 @@ ruc = { version = "1.0.5", default-features = false, features = ["compact"] }
 abci = { git = "https://github.com/FindoraNetwork/tendermint-abci", tag = "0.7.6" }
 config = { path = "../config"}
 ledger = { path = "../../ledger" }
-
-globutils = { git = "https://github.com/FindoraNetwork/platform-lib-utils", branch = "main" }
-cryptohash = { git = "https://github.com/FindoraNetwork/platform-lib-cryptohash", branch = "main" }
-
-finutils = { path = "../finutils" }
+cryptohash = { path = "../../../../cryptohash" }
+globutils = { path = "../../../../globutils" }
+finutils = { path = "../../../../finutils" }
 
 tempfile = "3.1.0"
 baseapp = { path = "../contracts/baseapp" }

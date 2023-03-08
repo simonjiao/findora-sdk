@@ -1,7 +1,13 @@
 [workspace]
 members = [
     "src/ledger",
-    "src/components/finutils",
+    "bitmap",
+    "merkle_tree",
+    "globutils",
+    "cryptohash",
+    "credentials",
+    "sliding_set",
+    "finutils",
     "src/components/abciapp",
     "src/components/config",
     "src/components/wasm",
